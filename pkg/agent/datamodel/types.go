@@ -731,9 +731,12 @@ type CustomFile struct {
 
 // OrchestratorProfile contains Orchestrator properties.
 type OrchestratorProfile struct {
-	OrchestratorType    string            `json:"orchestratorType"`
-	OrchestratorVersion string            `json:"orchestratorVersion"`
-	KubernetesConfig    *KubernetesConfig `json:"kubernetesConfig,omitempty"`
+	OrchestratorType    string `json:"orchestratorType"`
+	OrchestratorVersion string `json:"orchestratorVersion"`
+	// KubernetesPackageVersion overrides the kubelet and kubectl package version
+	// while preserving the Kubernetes API version for component configuration.
+	KubernetesPackageVersion string            `json:"kubernetesPackageVersion,omitempty"`
+	KubernetesConfig         *KubernetesConfig `json:"kubernetesConfig,omitempty"`
 }
 
 // ProvisioningState represents the current state of container service resource.
