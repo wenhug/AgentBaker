@@ -1037,7 +1037,7 @@ var _ = Describe("getLinuxNodeCSECommand", func() {
 	})
 
 	It("should handle multiple kubernetes versions", func() {
-		versions := []string{"1.28.0", "1.29.0", "1.30.0"}
+		versions := []string{"1.28.0", "1.29.0", "1.30.0", "1.36.5", "1.37.1"}
 
 		for _, version := range versions {
 			config, err := deepcopy.Anything(baseConfig)
@@ -1053,6 +1053,18 @@ var _ = Describe("getLinuxNodeCSECommand", func() {
 
 			vars := decodeCSEVars(cseCmd)
 			Expect(vars).To(HaveKeyWithValue("KUBERNETES_VERSION", version))
+			Expect(vars).To(HaveKeyWithValue("KUBERNETES_PACKAGE_VERSION", version))
+		}
+	})
+
+	It("should preserve the API version when selecting prerelease Kubernetes packages", func() {
+		profile := baseConfig.ContainerService.Properties.OrchestratorProfile
+		profile.OrchestratorVersion = "1.38.0"
+		for _, packageVersion := range []string{"1.38.0~alpha.2", "1.38.0~beta.0"} {
+			profile.KubernetesPackageVersion = packageVersion
+			vars := decodeCSEVars(templateGenerator.getLinuxNodeCSECommand(baseConfig))
+			Expect(vars).To(HaveKeyWithValue("KUBERNETES_VERSION", "1.38.0"))
+			Expect(vars).To(HaveKeyWithValue("KUBERNETES_PACKAGE_VERSION", packageVersion))
 		}
 	})
 

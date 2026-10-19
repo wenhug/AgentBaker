@@ -829,6 +829,7 @@ providers:
             BOOTSTRAP_PROFILE_CONTAINER_REGISTRY_SERVER=""
             OS_VERSION=""
             KUBERNETES_VERSION=""
+            KUBERNETES_PACKAGE_VERSION=""
         }
 
         Describe 'on Ubuntu'
@@ -885,6 +886,44 @@ providers:
                 KUBERNETES_VERSION="1.34.0"
                 When call configureKubeletAndKubectl
                 The output should include "installKubeletKubectlFromPkg"
+                The output should not include "installKubeletKubectlFromURL"
+            End
+
+            It 'should use the explicit prerelease package version while preserving the API version'
+                installKubeletKubectlFromPkg() {
+                    echo "installKubeletKubectlFromPkg $1"
+                }
+
+                KUBERNETES_VERSION="1.38.0"
+                KUBERNETES_PACKAGE_VERSION="1.38.0~alpha.2"
+                When call configureKubeletAndKubectl
+                The output should include "installKubeletKubectlFromPkg 1.38.0~alpha.2"
+                The variable KUBERNETES_VERSION should equal "1.38.0"
+                The output should not include "installKubeletKubectlFromURL"
+            End
+
+            It 'should use the explicit beta package version while preserving the API version'
+                installKubeletKubectlFromPkg() {
+                    echo "installKubeletKubectlFromPkg $1"
+                }
+
+                KUBERNETES_VERSION="1.38.0"
+                KUBERNETES_PACKAGE_VERSION="1.38.0~beta.0"
+                When call configureKubeletAndKubectl
+                The output should include "installKubeletKubectlFromPkg 1.38.0~beta.0"
+                The variable KUBERNETES_VERSION should equal "1.38.0"
+                The output should not include "installKubeletKubectlFromURL"
+            End
+
+            It 'should use the stable API version when no package override is set'
+                installKubeletKubectlFromPkg() {
+                    echo "installKubeletKubectlFromPkg $1"
+                }
+
+                KUBERNETES_VERSION="1.37.1"
+                When call configureKubeletAndKubectl
+                The output should include "installKubeletKubectlFromPkg 1.37.1"
+                The variable KUBERNETES_VERSION should equal "1.37.1"
                 The output should not include "installKubeletKubectlFromURL"
             End
 

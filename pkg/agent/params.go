@@ -111,6 +111,11 @@ func assignKubernetesParametersfromKubernetesConfig(properties *datamodel.Proper
 
 	k8sVersion := orchestratorProfile.OrchestratorVersion
 	addValue(parametersMap, "kubernetesVersion", k8sVersion)
+	packageVersion := orchestratorProfile.KubernetesPackageVersion
+	if packageVersion == "" {
+		packageVersion = k8sVersion
+	}
+	addValue(parametersMap, "kubernetesPackageVersion", packageVersion)
 
 	kubernetesConfig := orchestratorProfile.KubernetesConfig
 
